@@ -1,0 +1,47 @@
+:title {
+    color: red;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.subheader {
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.waveform-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.waveform {
+    flex-grow: 1;
+}
+
+.sample-rate {
+    margin-top: 20px;
+    color: red;
+    font-size: 18px;
+}
+
+:root {
+  --primary-color: #F63366;
+  --background-color: #FFFFFF;
+  --secondary-background-color: #F0F2F6;
+  --text-color: #262730;
+  font: sans-serif;
+}
+
+body {
+  color: var(--primary-color);
+}
+
+.streamlit-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.streamlit-selectbox, .streamlit-delta-value {
+  color: var(--secondary-color);
+}
