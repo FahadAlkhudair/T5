@@ -45,7 +45,7 @@ st.markdown("## Let's get started", unsafe_allow_html=True)
 st.markdown("## Try it yourself")
 
 # Load your trained model (make sure the path is correct)
-model = load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
+model = load_model('/Users/fahad/Desktop/T5/src/test1.h5')
 
 # Define the mapping from predicted index to emotion label
 # This should match the order of your model's output

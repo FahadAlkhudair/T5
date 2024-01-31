@@ -1,6 +1,5 @@
 # T5 capstone
 
-## 911 auto reply
+## Emotion Recognition from Audio
 
-automate call center
-911
+--- using dataset audio to prediect the emotion of the speaker ---
