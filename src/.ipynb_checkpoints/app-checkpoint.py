@@ -2,6 +2,12 @@ import streamlit as st
 import librosa
 import numpy as np
 from keras.models import load_model
+import sounddevice as sd
+import soundfile as sf
+import plotly.graph_objects as go
+import time
+from tqdm import tqdm
+
 st.markdown(
     """
     <style>
@@ -19,7 +25,7 @@ st.markdown(
 
         .waveform-container {
             display: flex;
-            flex-direction: row;1§
+            flex-direction: row;
         }
 
         .waveform {
@@ -71,27 +77,74 @@ st.title('Emotion Recognition from Audio')
 
 # File uploader
 uploaded_file = st.file_uploader("Choose an audio file...", type=['wav', 'mp3'])
+record_audio = st.button("Record Audio")
 
 if uploaded_file is not None:
     # Display audio player
     st.audio(uploaded_file, format='audio/wav')
-    
+
     # Save buffer to a temporary file
     with open('temp_audio.wav', 'wb') as f:
         f.write(uploaded_file.getbuffer())
-        
+
     try:
         # Extract features and reshape it for the model
         features = extract_mfcc('temp_audio.wav')
         features = features.reshape(1, -1)
-        
+
         # Make prediction
         prediction = model.predict(features)
         predicted_index = np.argmax(prediction, axis=1)
         predicted_emotion = emotion_labels[predicted_index[0]]
-        
+
         # Display the prediction
         st.write(f'Predicted Emotion: {predicted_emotion}')
-        
+
     except Exception as e:
         st.error(f'Error processing audio file: {e}')
+
+if record_audio:
+    duration = 5  # Set the duration of the recording (in seconds)
+    fs = 22050  # Set the sampling frequency
+
+    # Record audio
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1)
+
+    # Create a progress bar for recording
+    progress_bar = tqdm(total=duration, position=0, leave=True, ncols=50)
+
+    st.write("Recording audio...")
+    for t in range(duration):
+        progress_bar.update(1)
+        time.sleep(1)
+    progress_bar.close()
+
+    sd.wait()
+
+    # Save the recorded audio to a file
+    recorded_file = 'recorded_audio.wav'
+    sf.write(recorded_file, recording.flatten(), fs)
+
+    # Extract features from the recorded audio
+    recorded_features = extract_mfcc(recorded_file)
+    recorded_features = recorded_features.reshape(1, -1)
+
+    # Make prediction
+    prediction = model.predict(recorded_features)
+    predicted_index = np.argmax(prediction, axis=1)
+    predicted_emotion = emotion_labels[predicted_index[0]]
+
+    # Display the prediction
+    st.write(f'Predicted Emotion from Recorded Audio: {predicted_emotion}')
+
+    # Display the audio player for the recorded audio
+    st.audio(recorded_file, format='audio/wav')
+
+    # Plot waveform of recorded audio
+    fig = go.Figure(data=go.Scatter(y=recording.flatten(), mode='lines'))
+    fig.update_layout(
+        title='Recorded Audio Waveform',
+        xaxis_title='Time',
+        yaxis_title='Amplitude'
+    )
+    st.plotly_chart(fig)
