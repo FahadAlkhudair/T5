@@ -3,3 +3,6 @@ saved_models/Emotion_Emergency.h5
 CUSTOM_DATASET1.zip
 CUSTOM_DATASET-20240131T102044Z-001.zip
 *.wav
+sounds 3/ambulance/.DS_Store
+sounds 3/Civil/.DS_Store
+sounds final .zip
