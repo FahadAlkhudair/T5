@@ -104,7 +104,7 @@ if uploaded_file is not None:
 
     except Exception as e:
         st.error(f'Error processing audio file: {e}')
-recorded_file = None
+#recorded_file = None
 
 if record_audio:
     duration = 5  # Set the duration of the recording (in seconds)
@@ -151,10 +151,13 @@ if record_audio:
         yaxis_title='Amplitude'
     )
     st.plotly_chart(fig)
+    text_detection_model = whisper.load_model("small")
+    recorded_text = whisper.transcribe(model=text_detection_model, audio=recorded_file)
+
     
     
     
-text_detection_model = whisper.load_model("small")
+
 department_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 
@@ -163,24 +166,24 @@ department_labels = ['Civil', 'Police', 'Traffic', 'Ambulance']
 
 
 # Extract features and reshape it for the model
-features = extract_mfcc('temp_audio.wav')
-features = features.reshape(1, -1)
+#features = extract_mfcc('temp_audio.wav')
+#features = features.reshape(1, -1)
 
 # Make audio emotion prediction
-audio_prediction = model.predict(features)
-predicted_emotion_index = np.argmax(audio_prediction, axis=1)
-predicted_emotion = emotion_labels[predicted_emotion_index[0]]
+#audio_prediction = model.predict(features)
+#predicted_emotion_index = np.argmax(audio_prediction, axis=1)
+#predicted_emotion = emotion_labels[predicted_emotion_index[0]]
 
 # Perform text detection on the audio file
-audio_text = whisper.transcribe(model=text_detection_model, audio='temp_audio.wav')
+#audio_text = whisper.transcribe(model=text_detection_model, audio='temp_audio.wav')
 
 # Perform text detection on the recorded audio
-recorded_text = whisper.transcribe(model=text_detection_model, audio=recorded_file)
+#recorded_text = whisper.transcribe(model=text_detection_model, audio=recorded_file)
 
 # Display the results
-st.write(f'Predicted Emotion: {predicted_emotion}')
-st.write(f'Predicted Text: {audio_text}')
-st.write(f'Predicted Department: {department_classification["labels"][0]}')
+#st.write(f'Predicted Emotion: {predicted_emotion}')
+#st.write(f'Predicted Text: {audio_text}')
+#st.write(f'Predicted Department: {department_classification["labels"][0]}')
 
 
 
