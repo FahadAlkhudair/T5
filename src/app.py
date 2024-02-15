@@ -53,7 +53,7 @@ st.markdown("## Let's get started", unsafe_allow_html=True)
 st.markdown("## Try it yourself")
 
 # Load your trained model (make sure the path is correct)
-model = load_model('/Users/fahad/Desktop/T5/src/test1.h5')
+model = load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
 
 # Define the mapping from predicted index to emotion label
 # This should match the order of your model's output
@@ -104,6 +104,7 @@ if uploaded_file is not None:
 
     except Exception as e:
         st.error(f'Error processing audio file: {e}')
+recorded_file = None
 
 if record_audio:
     duration = 5  # Set the duration of the recording (in seconds)
@@ -153,7 +154,7 @@ if record_audio:
     
     
     
-text_detection_model = whisper.load_model("large-v3")
+text_detection_model = whisper.load_model("small")
 department_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 
@@ -171,10 +172,10 @@ predicted_emotion_index = np.argmax(audio_prediction, axis=1)
 predicted_emotion = emotion_labels[predicted_emotion_index[0]]
 
 # Perform text detection on the audio file
-audio_text = whisper.transcribe('temp_audio.wav', model=text_detection_model)
+audio_text = whisper.transcribe(model=text_detection_model, audio='temp_audio.wav')
 
-# Perform department classification on the audio text
-department_classification = classifier(audio_text, department_labels)
+# Perform text detection on the recorded audio
+recorded_text = whisper.transcribe(model=text_detection_model, audio=recorded_file)
 
 # Display the results
 st.write(f'Predicted Emotion: {predicted_emotion}')
