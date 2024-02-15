@@ -9,7 +9,7 @@ import time
 from tqdm import tqdm
 import whisper
 from transformers import pipeline
-
+#s
 st.markdown(
     """
     <style>
