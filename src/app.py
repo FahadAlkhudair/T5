@@ -7,6 +7,8 @@ import soundfile as sf
 import plotly.graph_objects as go
 import time
 from tqdm import tqdm
+import whisper
+from transformers import pipeline
 
 st.markdown(
     """
@@ -51,7 +53,7 @@ st.markdown("## Let's get started", unsafe_allow_html=True)
 st.markdown("## Try it yourself")
 
 # Load your trained model (make sure the path is correct)
-model = load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
+model = load_model('/Users/fahad/Desktop/T5/src/test1.h5')
 
 # Define the mapping from predicted index to emotion label
 # This should match the order of your model's output
@@ -148,3 +150,55 @@ if record_audio:
         yaxis_title='Amplitude'
     )
     st.plotly_chart(fig)
+    
+    
+    
+text_detection_model = whisper.load_model("large-v3")
+department_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+
+
+department_labels = ['Civil', 'Police', 'Traffic', 'Ambulance']
+
+
+
+# Extract features and reshape it for the model
+features = extract_mfcc('temp_audio.wav')
+features = features.reshape(1, -1)
+
+# Make audio emotion prediction
+audio_prediction = model.predict(features)
+predicted_emotion_index = np.argmax(audio_prediction, axis=1)
+predicted_emotion = emotion_labels[predicted_emotion_index[0]]
+
+# Perform text detection on the audio file
+audio_text = whisper.transcribe('temp_audio.wav', model=text_detection_model)
+
+# Perform department classification on the audio text
+department_classification = classifier(audio_text, department_labels)
+
+# Display the results
+st.write(f'Predicted Emotion: {predicted_emotion}')
+st.write(f'Predicted Text: {audio_text}')
+st.write(f'Predicted Department: {department_classification["labels"][0]}')
+
+
+
+# Extract features from the recorded audio
+recorded_features = extract_mfcc(recorded_file)
+recorded_features = recorded_features.reshape(1, -1)
+
+# Make audio emotion prediction for recorded audio
+recorded_prediction = model.predict(recorded_features)
+recorded_predicted_index = np.argmax(recorded_prediction, axis=1)
+recorded_predicted_emotion = emotion_labels[recorded_predicted_index[0]]
+
+# Perform text detection on the recorded audio
+recorded_text = whisper.transcribe(recorded_file, model=text_detection_model)
+
+# Perform department classification on the recorded audio text
+recorded_department_classification = classifier(recorded_text, department_labels)
+
+# Display the results for recorded audio
+st.write(f'Predicted Emotion from Recorded Audio: {recorded_predicted_emotion}')
+st.write(f'Predicted Text from Recorded Audio: {recorded_text}')
+st.write(f'Predicted Department from Recorded Audio: {recorded_department_classification["labels"][0]}')
