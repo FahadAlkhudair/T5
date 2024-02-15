@@ -49,7 +49,6 @@ audio_bytes = audio_recorder()  # Changed function here
 
 # Placeholder for messages
 message = st.empty()
-
 def process_audio(audio_data, file_extension):
     try:
         # Convert the audio bytes to a NumPy array
@@ -59,7 +58,7 @@ def process_audio(audio_data, file_extension):
         else:
             # If it's not a WAV file, use librosa to load it which will also convert it
             audio, sample_rate = librosa.load(io.BytesIO(audio_data), sr=None)
-        
+
         # Ensure audio is a NumPy array
         assert isinstance(audio, np.ndarray), "audio is not an np.ndarray"
 
@@ -68,35 +67,35 @@ def process_audio(audio_data, file_extension):
         features = features.reshape(1, -1)
 
         # Make emotion prediction
-        # ... (the rest of your code for prediction)
+        emotion_prediction = model.predict(features)
+        predicted_emotion_index = np.argmax(emotion_prediction)
+        predicted_emotion = emotion_labels[predicted_emotion_index]
+
+        # Display predicted emotion
+        st.write(f'Predicted Emotion: {predicted_emotion}')
+
+        # Transcribe the audio using Whisper
+        transcribed_text = text_detection_model.transcribe(io.BytesIO(audio_data))["text"]
+
+        # Display transcribed text
+        st.write(f'Transcribed Text: {transcribed_text}')
+
+        # Classify the department based on the transcribed text
+        department_result = department_classifier(transcribed_text, department_labels)
+        predicted_department = department_result['labels'][0]
+
+        # Display predicted department
+        st.write(f'Predicted Department: {predicted_department}')
 
     except Exception as e:
         message.error(f'Error processing audio file: {e}')
-
-
 # Check if a file has been uploaded and process it
 if uploaded_file is not None:
-    # Get the file extension
     file_extension = uploaded_file.name.split('.')[-1]
-    # Display audio player for the uploaded file
     st.audio(uploaded_file, format='audio/wav')
     process_audio(uploaded_file.read(), file_extension)
 
 # Check if an audio has been recorded and process it
 if audio_bytes is not None:
-    # Display audio player for the recorded audio
     st.audio(audio_bytes, format='audio/wav')
-    process_audio(audio_bytes, 'wav')  # Assuming recorded audio is in 'wav' format
-# Check if a file has been uploaded and process it
-if uploaded_file is not None:
-    # Get the file extension
-    file_extension = uploaded_file.name.split('.')[-1]
-    # Display audio player for the uploaded file
-    st.audio(uploaded_file, format='audio/wav')
-    process_audio(uploaded_file.read(), file_extension)
-
-# Check if an audio has been recorded and process it
-if audio_bytes is not None:
-    # Display audio player for the recorded audio
-    st.audio(audio_bytes, format='audio/wav')
-    process_audio(audio_bytes, 'wav')  # Assuming recorded audio is in 'wav' format
+    process_audio(audio_bytes, 'wav')  # Assuming the recorded audio is in 'wav' format
