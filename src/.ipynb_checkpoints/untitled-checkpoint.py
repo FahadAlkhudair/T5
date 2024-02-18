@@ -13,8 +13,13 @@ def extract_mfcc(audio, sr, n_mfcc=40):
     mfccs = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=n_mfcc)
     mfccs_processed = np.mean(mfccs.T, axis=0)
     return mfccs_processed
+    
 # Load your trained emotion recognition model
-model = load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
+@st.cache_resource
+def load_emotion():
+    return load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
+
+model = load_emotion()
 
 # Define the mapping from predicted index to emotion label
 emotion_labels = {
@@ -33,10 +38,18 @@ emotion_labels = {
 st.title('Audio Emotion Recognition and Text Detection')
 
 # Initialize Whisper model for transcription
-text_detection_model = whisper.load_model("small")
+@st.cache_resource
+def load_whiaper():
+    return whisper.load_model("small")
+text_detection_model = load_whiaper()  
+
 
 # Initialize department classifier
-department_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+@st.cache_resource
+def load_zero_shot():
+    return pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+
+department_classifier =load_zero_shot()
 department_labels = ['Civil', 'Police', 'Traffic', 'Ambulance']
 
 # File uploader for pre-recorded audio files
@@ -60,7 +73,7 @@ def process_audio(audio_data, file_extension):
             audio, sample_rate = librosa.load(io.BytesIO(audio_data), sr=None)
 
         # Ensure audio is a NumPy array
-        assert isinstance(audio, np.ndarray), "audio is not an np.ndarray"
+        #assert isinstance(audio, np.ndarray), "audio is not an np.ndarray"
 
         # Extract features from the audio array
         features = extract_mfcc(audio, sample_rate)  # Pass audio data and sample rate
