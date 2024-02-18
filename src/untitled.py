@@ -89,6 +89,9 @@ def process_audio(audio_data, file_extension):
 
     except Exception as e:
         message.error(f'Error processing audio file: {e}')
+
+    except Exception as e:
+        message.error(f'Error processing audio file: {e}')
 # Check if a file has been uploaded and process it
 if uploaded_file is not None:
     file_extension = uploaded_file.name.split('.')[-1]
