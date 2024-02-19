@@ -1,7 +1,9 @@
 import os
 import sys
 import datetime
-#import openai
+from openai import OpenAI
+
+client = OpenAI(api_key='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')
 import dotenv
 import whisper
 import streamlit as st
@@ -11,7 +13,6 @@ from audio_recorder_streamlit import audio_recorder
 # import API key from .env file
 #dotenv.load_dotenv()
 #openai.api_key = os.getenv("OPENAI_API_KEY")
-#openai.api_key = 
 
 @st.cache_resource
 def load_whiaper():
@@ -21,6 +22,7 @@ text_detection_model = load_whiaper()
 
 def transcribe(audio_file_path):
     result = text_detection_model.transcribe(audio_file_path)
+    client.audio.transcribe("whisper-1", audio_file_path)
     return result
 
 def save_audio_file(audio_bytes, file_extension):
