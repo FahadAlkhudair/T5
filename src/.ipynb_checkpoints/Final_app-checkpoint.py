@@ -5,7 +5,8 @@ import whisper
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 from transformers import pipeline
-
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 # Function to load the Whisper model
 @st.cache_resource
 def load_whisper():

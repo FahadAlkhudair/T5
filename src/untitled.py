@@ -17,7 +17,7 @@ def extract_mfcc(audio, sr, n_mfcc=40):
 # Load your trained emotion recognition model
 @st.cache_resource
 def load_emotion():
-    return load_model('/Users/irk2w/Desktop/T5/src/test1.h5')
+    return load_model('/Users/fahad/Desktop/T5/src/test1.h5')
 
 model = load_emotion()
 

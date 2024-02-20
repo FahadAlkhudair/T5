@@ -1,19 +1,20 @@
 import os
-import sys
 import datetime
 import whisper
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 from transformers import pipeline
 import ssl
+
 ssl._create_default_https_context = ssl._create_unverified_context
+
 # Function to load the Whisper model
-@st.cache_resource
+@st.cache(allow_output_mutation=True)
 def load_whisper():
     return whisper.load_model("large-v3")
 
 # Function to load the zero-shot classification model
-@st.cache_resource
+@st.cache
 def load_classifier():
     classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     return classifier
@@ -46,7 +47,17 @@ def classify_transcript(text):
     return result
 
 def main():
-    st.title("بلاغك")
+    st.set_page_config(page_title="بلاغك", page_icon="Desktop/T5/src/logo.png")
+
+    # Add logo and title
+    col1, col2 = st.columns([0.2, 0.8])
+    with col1:
+        st.image("Desktop/T5/src/logo.png", use_column_width=True)
+    with col2:
+        st.title("بلاغك")
+
+    # Add image in the top corner
+    st.image("Desktop/T5/src/KSA.jpeg", use_column_width=False)
 
     tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
 
