@@ -10,19 +10,19 @@ from audio_recorder_streamlit import audio_recorder
 
 # import API key from .env file
 #dotenv.load_dotenv()
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = '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'
+openai.api_key = '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'
 
 @st.cache_resource
 def load_whiaper():
-    return whisper.load_model("large-v3")
+    return whisper.load_model("small")
 
 text_detection_model = load_whiaper() 
 
-def transcribe(audio_file_path):
-    result = text_detection_model.transcribe(audio_file_path)
-    openai.Audio.transcribe("whisper-1", audio_file_path)
-    return result
+def transcribe(audio_file):
+    
+    transcript = text_detection_model(audio_file)
+    openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript
 
 def save_audio_file(audio_bytes, file_extension):
     """
