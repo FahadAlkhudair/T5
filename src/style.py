@@ -1,15 +1,14 @@
 import os
+import sys
 import datetime
 import whisper
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 from transformers import pipeline
-import ssl
-
-ssl._create_default_https_context = ssl._create_unverified_context
+from langdetect import detect
 
 # Function to load the Whisper model
-@st.cache(allow_output_mutation=True)
+@st.cache
 def load_whisper():
     return whisper.load_model("large-v3")
 
@@ -38,7 +37,9 @@ def transcribe(audio_file_path):
 # Function to transcribe audio
 def transcribe_audio(file_path):
     transcript = transcribe(file_path)
-    return transcript["text"]
+    text = transcript["text"]
+    language = detect(text)
+    return text, language
 
 # Function to classify the transcript
 def classify_transcript(text):
@@ -47,17 +48,7 @@ def classify_transcript(text):
     return result
 
 def main():
-    st.set_page_config(page_title="بلاغك", page_icon="Desktop/T5/src/logo.png")
-
-    # Add logo and title
-    col1, col2 = st.columns([0.2, 0.8])
-    with col1:
-        st.image("Desktop/T5/src/logo.png", use_column_width=True)
-    with col2:
-        st.title("بلاغك")
-
-    # Add image in the top corner
-    st.image("Desktop/T5/src/KSA.jpeg", use_column_width=False)
+    st.title("بلاغك")
 
     tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
 
@@ -84,11 +75,14 @@ def main():
         )
 
         # Transcribe the audio file
-        transcript_text = transcribe_audio(audio_file_path)
+        transcript_text, detected_language = transcribe_audio(audio_file_path)
 
-        # Display the transcript
+        # Display the transcript and detected language
         st.header("Transcript")
         st.write(transcript_text)
+        
+        st.header("Detected Language")
+        st.write(detected_language)
 
         # Classify the transcript
         classification_result = classify_transcript(transcript_text)

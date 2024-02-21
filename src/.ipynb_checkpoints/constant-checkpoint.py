@@ -5,15 +5,13 @@ import whisper
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 from transformers import pipeline
-from langdetect import detect
-
 # Function to load the Whisper model
-@st.cache
+@st.cache_resource
 def load_whisper():
     return whisper.load_model("large-v3")
 
 # Function to load the zero-shot classification model
-@st.cache
+@st.cache_resource
 def load_classifier():
     classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     return classifier
@@ -37,9 +35,7 @@ def transcribe(audio_file_path):
 # Function to transcribe audio
 def transcribe_audio(file_path):
     transcript = transcribe(file_path)
-    text = transcript["text"]
-    language = detect(text)
-    return text, language
+    return transcript["text"]
 
 # Function to classify the transcript
 def classify_transcript(text):
@@ -66,6 +62,8 @@ def main():
             file_extension = audio_file.type.split('/')[1]
             audio_file_path = save_audio_file(audio_file.read(), file_extension)
 
+    
+
     # Transcribe and classify button action
     if st.button("Transcribe and Classify"):
         # Find the newest audio file
@@ -73,16 +71,14 @@ def main():
             [f for f in os.listdir(".") if f.startswith("audio")],
             key=os.path.getctime,
         )
+        
 
         # Transcribe the audio file
-        transcript_text, detected_language = transcribe_audio(audio_file_path)
+        transcript_text = transcribe_audio(audio_file_path)
 
-        # Display the transcript and detected language
+        # Display the transcript
         st.header("Transcript")
         st.write(transcript_text)
-        
-        st.header("Detected Language")
-        st.write(detected_language)
 
         # Classify the transcript
         classification_result = classify_transcript(transcript_text)
