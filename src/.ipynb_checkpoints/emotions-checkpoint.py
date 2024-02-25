@@ -86,9 +86,6 @@ def main():
     """
     st.markdown(rtl_and_custom_font_style, unsafe_allow_html=True)
 
-    # Display the modified title with custom style
-    st.markdown('<h1 class="title-text">بلاغك</h1>', unsafe_allow_html=True)
-    # Rest of your code goes here...
 
 
     tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
