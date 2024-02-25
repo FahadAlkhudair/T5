@@ -60,7 +60,36 @@ def classify_emotion(audio_file_path):
     return result
 
 def main():
-    st.title("بلاغك")
+    rtl_and_custom_font_style = """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Arabic:wght@400;700&display=swap');
+
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: "Arial", sans-serif;
+        }
+        .stApp {
+            background-image: url('https://h.top4top.io/p_2977m50k71.png'); /* Add your image URL */
+            background-attachment: fixed;
+            background-position: center;
+            direction: rtl;
+            text-align: right;
+            background-size: 100vw 100vh;  /* This sets the size to cover 100% of the viewport width and height */
+        }
+        .title-text {
+            color: white;
+            font-family: 'IBM Plex Arabic', sans-serif;
+            margin-right: 10px;
+        }
+    </style>
+    """
+    st.markdown(rtl_and_custom_font_style, unsafe_allow_html=True)
+
+    # Display the modified title with custom style
+    st.markdown('<h1 class="title-text">بلاغك</h1>', unsafe_allow_html=True)
+    # Rest of your code goes here...
+
 
     tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
 
