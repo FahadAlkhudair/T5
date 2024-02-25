@@ -9,7 +9,7 @@ from langdetect import detect
 # Load the Whisper model
 @st.cache_resource
 def load_whisper():
-    return whisper.load_model("large-v3")
+    return whisper.load_model("small")
 
 # Load the zero-shot classification model
 @st.cache_resource
@@ -70,7 +70,7 @@ def main():
             font-family: "Arial", sans-serif;
         }
         .stApp {
-            background-image: url('https://h.top4top.io/p_2977m50k71.png'); /* Add your image URL */
+            background-image: url('https://c.top4top.io/p_2977qjjb71.png'); /* Add your image URL */
             background-attachment: fixed;
             background-position: center;
             direction: rtl;
@@ -88,7 +88,7 @@ def main():
 
 
 
-    tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
+    tab1, tab2 = st.tabs(["سجل صوتية", "ارفع صوتية"])
 
     # Record Audio tab
     with tab1:
@@ -105,7 +105,7 @@ def main():
             audio_file_path = save_audio_file(audio_file.read(), file_extension)
 
     # Transcribe, classify, and detect emotion button action
-    if st.button("Transcribe and Classify"):
+    if st.button("ابدأ"):
         # Find the newest audio file
         audio_file_path = max(
             [f for f in os.listdir(".") if f.startswith("audio")],
@@ -116,21 +116,21 @@ def main():
         transcript_text, detected_language = transcribe_audio(audio_file_path)
 
         # Display the transcript and detected language
-        st.header("Transcript")
-        st.write(transcript_text)
+        #st.header("Transcript")
+        #st.write(transcript_text)
         
-        st.header("Detected Language")
+        st.header("اللغة")
         st.write(detected_language)
 
         # Classify the transcript
         classification_result = classify_transcript(transcript_text)
-        st.header("Classification")
-        st.write(f"Predicted Department: {classification_result['labels'][0]}")
+        st.header("تصنيف البلاغ")
+        st.write(f"القطاع: {classification_result['labels'][0]}")
 
         # Classify the emotion
         emotion_result = classify_emotion(audio_file_path)
-        st.header("Emotion Classification")
-        st.write(f"Detected Emotion: {emotion_result[0]['label']} - Confidence: {emotion_result[0]['score']*100:.2f}%")
+        st.header("شعور المتصل")
+        st.write(f"المشاعر: {emotion_result[0]['label']}")
 
         # Save the transcript to a text file
         with open(f"{audio_file_path.split('.')[0]}.txt", "w") as f:
@@ -138,7 +138,7 @@ def main():
 
         # Provide a download button for the transcript
         st.download_button(
-            label="Download Transcript",
+            label="تحميل الكتابة",
             data=transcript_text,
             file_name=f"{audio_file_path.split('.')[0]}.txt",
             mime="text/plain"
