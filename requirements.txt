@@ -1,0 +1,6 @@
+audio_recorder_streamlit==0.0.8
+langdetect==1.0.9
+openai_whisper==20231117
+streamlit==1.31.1
+transformers==4.37.2
+whisper==1.1.10
