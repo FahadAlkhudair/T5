@@ -1,5 +1,4 @@
 import os
-import sys
 import datetime
 import whisper
 import streamlit as st
@@ -7,19 +6,25 @@ from audio_recorder_streamlit import audio_recorder
 from transformers import pipeline
 from langdetect import detect
 
-# Function to load the Whisper model
-@st.cache
+# Load the Whisper model
+@st.cache_resource
 def load_whisper():
-    return whisper.load_model("large-v3")
+    return whisper.load_model("small")
 
-# Function to load the zero-shot classification model
-@st.cache
+# Load the zero-shot classification model
+@st.cache_resource
 def load_classifier():
     classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     return classifier
 
+# Load the emotion classification model
+@st.cache_resource
+def load_emotion_classifier():
+    return pipeline("audio-classification", model="harshit345/xlsr-wav2vec-speech-emotion-recognition")
+
 text_detection_model = load_whisper()
 zero_shot_classifier = load_classifier()
+emotion_classifier = load_emotion_classifier()
 
 # Function to save audio bytes to a file
 def save_audio_file(audio_bytes, file_extension):
@@ -29,12 +34,12 @@ def save_audio_file(audio_bytes, file_extension):
         f.write(audio_bytes)
     return file_name
 
-# Function to transcribe audio file
+# Function to transcribe audio file and return detected language
 def transcribe(audio_file_path):
     result = text_detection_model.transcribe(audio_file_path)
     return result
 
-# Function to transcribe audio
+# Function to transcribe audio and get detected language
 def transcribe_audio(file_path):
     transcript = transcribe(file_path)
     text = transcript["text"]
@@ -47,10 +52,46 @@ def classify_transcript(text):
     result = zero_shot_classifier(text, candidate_labels=classes, hypothesis_template="This is a {} call.")
     return result
 
-def main():
-    st.title("بلاغك")
+# Function to classify emotion of audio
+def classify_emotion(audio_file_path):
+    with open(audio_file_path, "rb") as f:
+        audio_data = f.read()
+    result = emotion_classifier(audio_data)
+    return result
 
-    tab1, tab2 = st.tabs(["Record Audio", "Upload Audio"])
+def main():
+    rtl_and_custom_font_style = """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Arabic:wght@400;700&display=swap');
+
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: "Arial", sans-serif;
+        }
+        .stApp {
+            background-image: url('https://c.top4top.io/p_2977qjjb71.png'); /* Add your image URL */
+            background-attachment: fixed;
+            background-position: center;
+            direction: rtl;
+            text-align: right;
+            background-size: 100vw 100vh;  /* This sets the size to cover 100% of the viewport width and height */
+        }
+        .title-text {
+            color: white;
+            font-family: 'IBM Plex Arabic', sans-serif;
+            margin-right: 10px;
+        }
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size:1rem;
+        }
+    </style>
+    """
+    st.markdown(rtl_and_custom_font_style, unsafe_allow_html=True)
+
+
+
+    tab1, tab2 = st.tabs(["سجل صوتية", "ارفع صوتية"])
 
     # Record Audio tab
     with tab1:
@@ -66,8 +107,8 @@ def main():
             file_extension = audio_file.type.split('/')[1]
             audio_file_path = save_audio_file(audio_file.read(), file_extension)
 
-    # Transcribe and classify button action
-    if st.button("Transcribe and Classify"):
+    # Transcribe, classify, and detect emotion button action
+    if st.button("ابدأ"):
         # Find the newest audio file
         audio_file_path = max(
             [f for f in os.listdir(".") if f.startswith("audio")],
@@ -78,16 +119,21 @@ def main():
         transcript_text, detected_language = transcribe_audio(audio_file_path)
 
         # Display the transcript and detected language
-        st.header("Transcript")
-        st.write(transcript_text)
+        #st.header("Transcript")
+        #st.write(transcript_text)
         
-        st.header("Detected Language")
+        st.header("اللغة")
         st.write(detected_language)
 
         # Classify the transcript
         classification_result = classify_transcript(transcript_text)
-        st.header("Classification")
-        st.write(f"Predicted Department: {classification_result['labels'][0]}")
+        st.header("تصنيف البلاغ")
+        st.write(f"القطاع: {classification_result['labels'][0]}")
+
+        # Classify the emotion
+        emotion_result = classify_emotion(audio_file_path)
+        st.header("شعور المتصل")
+        st.write(f"الشعور: {emotion_result[0]['label']}")
 
         # Save the transcript to a text file
         with open(f"{audio_file_path.split('.')[0]}.txt", "w") as f:
@@ -95,7 +141,7 @@ def main():
 
         # Provide a download button for the transcript
         st.download_button(
-            label="Download Transcript",
+            label="تحميل الكتابة",
             data=transcript_text,
             file_name=f"{audio_file_path.split('.')[0]}.txt",
             mime="text/plain"
