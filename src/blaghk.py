@@ -82,6 +82,9 @@ def main():
             font-family: 'IBM Plex Arabic', sans-serif;
             margin-right: 10px;
         }
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size:1rem;
+        }
     </style>
     """
     st.markdown(rtl_and_custom_font_style, unsafe_allow_html=True)
@@ -130,7 +133,7 @@ def main():
         # Classify the emotion
         emotion_result = classify_emotion(audio_file_path)
         st.header("شعور المتصل")
-        st.write(f"المشاعر: {emotion_result[0]['label']}")
+        st.write(f"الشعور: {emotion_result[0]['label']}")
 
         # Save the transcript to a text file
         with open(f"{audio_file_path.split('.')[0]}.txt", "w") as f:
