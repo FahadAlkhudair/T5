@@ -23,7 +23,7 @@ We have utilized a combination of technologies to bring Blaghk (بلاغك) to l
 - **Streamlit**: An open-source app framework that is the cornerstone of our user interface, providing a seamless and interactive front-end experience. 🖥️
 - **Jupyter Notebook**: A web-based interactive computing platform used for the development of our Python-based backend. It has been instrumental in prototyping and testing our AI models. 📓
 
-  ## Methodology 💯
+## Methodology 💯
 
 The application follows a clear workflow to provide a seamless user experience:
 
